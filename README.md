@@ -16,6 +16,8 @@ Open `http://localhost:3000`.
 - `/` Dashboard (Dividend After Tax, Sell Planner, Compare)
 - `/dividend` Dividend After-Tax module
 - `/sell` Sell Planner module
+- `/goal` Monthly Contribution to 2030 Goal calculator
+- `/risk` Position Sizing + Risk Guardrail calculator
 - `/templates` Tax + Fee templates
 - `/history` Saved scenarios
 - `/settings` Theme, export/import, reset
@@ -33,6 +35,11 @@ Open `http://localhost:3000`.
 - **Tax Profiles** include dividend withholding rate and CGT slabs.
 - **Fee Profiles** include percent-of-trade or fixed fees applied to buy/sell/both.
 - Sample profiles are placeholders only — edit them for your broker and tax status.
+
+## Additional Calculators
+
+- **Monthly Contribution to 2030 Goal**: projects a future value curve, required monthly contribution, and inflation-adjusted targets.
+- **Position Sizing + Risk Guardrail**: estimates safe allocation limits and suggests next actions based on exposure rules.
 
 ## Import/Export Format
 

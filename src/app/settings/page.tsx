@@ -124,6 +124,76 @@ export default function SettingsPage() {
                   }
                 />
               </label>
+              <div className="grid gap-2">
+                <p className="text-sm font-medium">CGT Slabs</p>
+                {profile.cgtRules.map((rule) => (
+                  <div
+                    key={rule.id}
+                    className="grid gap-2 rounded-lg border border-border p-3 md:grid-cols-[1.2fr_1fr_1fr_1fr]"
+                  >
+                    <Input
+                      value={rule.label}
+                      onChange={(event) =>
+                        updateTaxProfile({
+                          ...profile,
+                          cgtRules: profile.cgtRules.map((item) =>
+                            item.id === rule.id ? { ...item, label: event.target.value } : item
+                          )
+                        })
+                      }
+                    />
+                    <Input
+                      type="number"
+                      min={0}
+                      value={rule.minDays}
+                      onChange={(event) =>
+                        updateTaxProfile({
+                          ...profile,
+                          cgtRules: profile.cgtRules.map((item) =>
+                            item.id === rule.id
+                              ? { ...item, minDays: Number(event.target.value) }
+                              : item
+                          )
+                        })
+                      }
+                    />
+                    <Input
+                      type="number"
+                      min={0}
+                      value={rule.maxDays ?? ""}
+                      placeholder="Max days"
+                      onChange={(event) =>
+                        updateTaxProfile({
+                          ...profile,
+                          cgtRules: profile.cgtRules.map((item) =>
+                            item.id === rule.id
+                              ? {
+                                  ...item,
+                                  maxDays: event.target.value ? Number(event.target.value) : null
+                                }
+                              : item
+                          )
+                        })
+                      }
+                    />
+                    <Input
+                      type="number"
+                      min={0}
+                      value={rule.rate}
+                      onChange={(event) =>
+                        updateTaxProfile({
+                          ...profile,
+                          cgtRules: profile.cgtRules.map((item) =>
+                            item.id === rule.id
+                              ? { ...item, rate: Number(event.target.value) }
+                              : item
+                          )
+                        })
+                      }
+                    />
+                  </div>
+                ))}
+              </div>
             </div>
           ))}
         </CardContent>

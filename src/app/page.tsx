@@ -6,6 +6,8 @@ import { DividendCalculator } from "@/components/DividendCalculator";
 import { SellPlanner } from "@/components/SellPlanner";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import Link from "next/link";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { useLoad } from "@/lib/useLoad";
 
 export default function DashboardPage() {
@@ -54,6 +56,31 @@ export default function DashboardPage() {
           <CompareView />
         </TabsContent>
       </Tabs>
+
+      <div className="grid gap-4 lg:grid-cols-2">
+        <Card>
+          <CardHeader>
+            <CardTitle>2030 Goal Calculator</CardTitle>
+            <CardDescription>Model monthly contributions and future value.</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <Link className="text-sm font-medium text-accent underline" href="/goal">
+              Open calculator →
+            </Link>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardHeader>
+            <CardTitle>Position Sizing + Risk Guardrails</CardTitle>
+            <CardDescription>Plan safe allocations and avoid overweight positions.</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <Link className="text-sm font-medium text-accent underline" href="/risk">
+              Open calculator →
+            </Link>
+          </CardContent>
+        </Card>
+      </div>
     </div>
   );
 }
