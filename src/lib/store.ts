@@ -146,6 +146,8 @@ interface AppState {
   load: () => Promise<void>;
   addDividendScenario: (input: Omit<DividendScenario, "id" | "createdAt" | "updatedAt" | "currency">) => void;
   addSellScenario: (input: Omit<SellScenario, "id" | "createdAt" | "updatedAt" | "currency">) => void;
+  updateDividendScenario: (scenario: DividendScenario) => void;
+  updateSellScenario: (scenario: SellScenario) => void;
   addTaxProfile: (input: Omit<TaxProfile, "id" | "createdAt" | "updatedAt">) => void;
   updateTaxProfile: (profile: TaxProfile) => void;
   addFeeProfile: (input: Omit<FeeProfile, "id" | "createdAt" | "updatedAt">) => void;
@@ -211,6 +213,38 @@ export const useAppStore = create<AppState>((set, get) => ({
       feeProfiles: get().feeProfiles
     });
   },
+  updateDividendScenario: (scenario) => {
+    const parsed = dividendScenarioSchema.safeParse({
+      label: scenario.label,
+      tickerOrName: scenario.tickerOrName,
+      shares: scenario.shares,
+      buyPrice: scenario.buyPrice,
+      currentPrice: scenario.currentPrice,
+      dividendPerShare: scenario.dividendPerShare,
+      dividendFrequency: scenario.dividendFrequency,
+      customDistributionsPerYear: scenario.customDistributionsPerYear,
+      taxProfileId: scenario.taxProfileId
+    });
+    if (!parsed.success) {
+      get().pushToast({
+        title: "Scenario invalid",
+        description: "Please check required dividend fields."
+      });
+      return;
+    }
+    const updated = { ...scenario, updatedAt: nowIso() };
+    const next = get().dividendScenarios.map((item) =>
+      item.id === scenario.id ? updated : item
+    );
+    set({ dividendScenarios: next });
+    saveSnapshot({
+      dividendScenarios: next,
+      sellScenarios: get().sellScenarios,
+      taxProfiles: get().taxProfiles,
+      feeProfiles: get().feeProfiles
+    });
+    get().pushToast({ title: "Dividend scenario updated" });
+  },
   addSellScenario: (input) => {
     const parsed = sellScenarioSchema.safeParse(input);
     if (!parsed.success) {
@@ -239,6 +273,38 @@ export const useAppStore = create<AppState>((set, get) => ({
       taxProfiles: get().taxProfiles,
       feeProfiles: get().feeProfiles
     });
+  },
+  updateSellScenario: (scenario) => {
+    const parsed = sellScenarioSchema.safeParse({
+      label: scenario.label,
+      tickerOrName: scenario.tickerOrName,
+      quantity: scenario.quantity,
+      buyPrice: scenario.buyPrice,
+      sellPrice: scenario.sellPrice,
+      buyDate: scenario.buyDate,
+      sellDate: scenario.sellDate,
+      taxProfileId: scenario.taxProfileId,
+      feeProfileId: scenario.feeProfileId
+    });
+    if (!parsed.success) {
+      get().pushToast({
+        title: "Scenario invalid",
+        description: "Please check required sell fields."
+      });
+      return;
+    }
+    const updated = { ...scenario, updatedAt: nowIso() };
+    const next = get().sellScenarios.map((item) =>
+      item.id === scenario.id ? updated : item
+    );
+    set({ sellScenarios: next });
+    saveSnapshot({
+      dividendScenarios: get().dividendScenarios,
+      sellScenarios: next,
+      taxProfiles: get().taxProfiles,
+      feeProfiles: get().feeProfiles
+    });
+    get().pushToast({ title: "Sell scenario updated" });
   },
   addTaxProfile: (input) => {
     const parsed = taxProfileSchema.safeParse(input);

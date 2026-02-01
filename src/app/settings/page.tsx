@@ -5,6 +5,7 @@ import { Download, Upload } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
+import { Select } from "@/components/ui/select";
 import { Skeleton } from "@/components/ui/skeleton";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { useAppStore } from "@/lib/store";
@@ -17,6 +18,14 @@ export default function SettingsPage() {
   const importData = useAppStore((state) => state.importData);
   const resetAll = useAppStore((state) => state.resetAll);
   const pushToast = useAppStore((state) => state.pushToast);
+  const taxProfiles = useAppStore((state) => state.taxProfiles);
+  const feeProfiles = useAppStore((state) => state.feeProfiles);
+  const dividendScenarios = useAppStore((state) => state.dividendScenarios);
+  const sellScenarios = useAppStore((state) => state.sellScenarios);
+  const updateTaxProfile = useAppStore((state) => state.updateTaxProfile);
+  const updateFeeProfile = useAppStore((state) => state.updateFeeProfile);
+  const updateDividendScenario = useAppStore((state) => state.updateDividendScenario);
+  const updateSellScenario = useAppStore((state) => state.updateSellScenario);
 
   const [resetInput, setResetInput] = useState("");
   const [resetOpen, setResetOpen] = useState(false);
@@ -86,6 +95,289 @@ export default function SettingsPage() {
             <Upload size={16} />
             Import JSON
           </Button>
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardHeader>
+          <CardTitle>Tax Profile Quick Edit</CardTitle>
+          <CardDescription>
+            Adjust dividend withholding rates (10%–30%) directly from settings.
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="grid gap-4">
+          {taxProfiles.map((profile) => (
+            <div key={profile.id} className="grid gap-2 rounded-lg border border-border p-4">
+              <p className="text-sm font-medium">{profile.name}</p>
+              <label className="text-sm">
+                Dividend withholding rate (%)
+                <Input
+                  type="number"
+                  min={10}
+                  max={30}
+                  value={profile.dividendWithholdingRate}
+                  onChange={(event) =>
+                    updateTaxProfile({
+                      ...profile,
+                      dividendWithholdingRate: Number(event.target.value)
+                    })
+                  }
+                />
+              </label>
+            </div>
+          ))}
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardHeader>
+          <CardTitle>Manual Fee Profile</CardTitle>
+          <CardDescription>Update fee profiles directly from settings.</CardDescription>
+        </CardHeader>
+        <CardContent className="grid gap-4">
+          {feeProfiles.map((profile) => (
+            <div key={profile.id} className="grid gap-3 rounded-lg border border-border p-4">
+              <label className="text-sm">
+                Profile name
+                <Input
+                  value={profile.name}
+                  onChange={(event) =>
+                    updateFeeProfile({
+                      ...profile,
+                      name: event.target.value
+                    })
+                  }
+                />
+              </label>
+              {profile.fees.map((fee) => (
+                <div
+                  key={fee.id}
+                  className="grid gap-2 rounded-lg border border-border p-3 md:grid-cols-[1.3fr_1fr_1fr_1fr]"
+                >
+                  <Input
+                    value={fee.label}
+                    onChange={(event) =>
+                      updateFeeProfile({
+                        ...profile,
+                        fees: profile.fees.map((item) =>
+                          item.id === fee.id ? { ...item, label: event.target.value } : item
+                        )
+                      })
+                    }
+                  />
+                  <Select
+                    value={fee.type}
+                    onChange={(event) =>
+                      updateFeeProfile({
+                        ...profile,
+                        fees: profile.fees.map((item) =>
+                          item.id === fee.id
+                            ? { ...item, type: event.target.value as typeof fee.type }
+                            : item
+                        )
+                      })
+                    }
+                  >
+                    <option value="percent_of_trade_value">% of trade value</option>
+                    <option value="fixed">Fixed</option>
+                  </Select>
+                  <Input
+                    type="number"
+                    min={0}
+                    value={fee.value}
+                    onChange={(event) =>
+                      updateFeeProfile({
+                        ...profile,
+                        fees: profile.fees.map((item) =>
+                          item.id === fee.id
+                            ? { ...item, value: Number(event.target.value) }
+                            : item
+                        )
+                      })
+                    }
+                  />
+                  <Select
+                    value={fee.applyOn}
+                    onChange={(event) =>
+                      updateFeeProfile({
+                        ...profile,
+                        fees: profile.fees.map((item) =>
+                          item.id === fee.id
+                            ? { ...item, applyOn: event.target.value as typeof fee.applyOn }
+                            : item
+                        )
+                      })
+                    }
+                  >
+                    <option value="buy">Buy</option>
+                    <option value="sell">Sell</option>
+                    <option value="both">Both</option>
+                  </Select>
+                </div>
+              ))}
+            </div>
+          ))}
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardHeader>
+          <CardTitle>Saved Scenarios</CardTitle>
+          <CardDescription>View and edit your saved dividend and sell scenarios.</CardDescription>
+        </CardHeader>
+        <CardContent className="grid gap-6">
+          <div className="grid gap-3">
+            <p className="text-sm font-semibold">Dividend Scenarios</p>
+            {dividendScenarios.length === 0 ? (
+              <p className="text-sm text-muted-foreground">No dividend scenarios saved yet.</p>
+            ) : (
+              dividendScenarios.map((scenario) => (
+                <div key={scenario.id} className="grid gap-2 rounded-lg border border-border p-4">
+                  <label className="text-sm">
+                    Label
+                    <Input
+                      value={scenario.label}
+                      onChange={(event) =>
+                        updateDividendScenario({ ...scenario, label: event.target.value })
+                      }
+                    />
+                  </label>
+                  <label className="text-sm">
+                    Ticker / Name
+                    <Input
+                      value={scenario.tickerOrName}
+                      onChange={(event) =>
+                        updateDividendScenario({
+                          ...scenario,
+                          tickerOrName: event.target.value
+                        })
+                      }
+                    />
+                  </label>
+                  <div className="grid gap-2 md:grid-cols-3">
+                    <label className="text-sm">
+                      Shares
+                      <Input
+                        type="number"
+                        min={0}
+                        value={scenario.shares}
+                        onChange={(event) =>
+                          updateDividendScenario({
+                            ...scenario,
+                            shares: Number(event.target.value)
+                          })
+                        }
+                      />
+                    </label>
+                    <label className="text-sm">
+                      Buy Price
+                      <Input
+                        type="number"
+                        min={0}
+                        value={scenario.buyPrice}
+                        onChange={(event) =>
+                          updateDividendScenario({
+                            ...scenario,
+                            buyPrice: Number(event.target.value)
+                          })
+                        }
+                      />
+                    </label>
+                    <label className="text-sm">
+                      Current Price
+                      <Input
+                        type="number"
+                        min={0}
+                        value={scenario.currentPrice}
+                        onChange={(event) =>
+                          updateDividendScenario({
+                            ...scenario,
+                            currentPrice: Number(event.target.value)
+                          })
+                        }
+                      />
+                    </label>
+                  </div>
+                </div>
+              ))
+            )}
+          </div>
+          <div className="grid gap-3">
+            <p className="text-sm font-semibold">Sell Scenarios</p>
+            {sellScenarios.length === 0 ? (
+              <p className="text-sm text-muted-foreground">No sell scenarios saved yet.</p>
+            ) : (
+              sellScenarios.map((scenario) => (
+                <div key={scenario.id} className="grid gap-2 rounded-lg border border-border p-4">
+                  <label className="text-sm">
+                    Label
+                    <Input
+                      value={scenario.label}
+                      onChange={(event) =>
+                        updateSellScenario({ ...scenario, label: event.target.value })
+                      }
+                    />
+                  </label>
+                  <label className="text-sm">
+                    Ticker / Name
+                    <Input
+                      value={scenario.tickerOrName}
+                      onChange={(event) =>
+                        updateSellScenario({
+                          ...scenario,
+                          tickerOrName: event.target.value
+                        })
+                      }
+                    />
+                  </label>
+                  <div className="grid gap-2 md:grid-cols-3">
+                    <label className="text-sm">
+                      Quantity
+                      <Input
+                        type="number"
+                        min={0}
+                        value={scenario.quantity}
+                        onChange={(event) =>
+                          updateSellScenario({
+                            ...scenario,
+                            quantity: Number(event.target.value)
+                          })
+                        }
+                      />
+                    </label>
+                    <label className="text-sm">
+                      Buy Price
+                      <Input
+                        type="number"
+                        min={0}
+                        value={scenario.buyPrice}
+                        onChange={(event) =>
+                          updateSellScenario({
+                            ...scenario,
+                            buyPrice: Number(event.target.value)
+                          })
+                        }
+                      />
+                    </label>
+                    <label className="text-sm">
+                      Sell Price
+                      <Input
+                        type="number"
+                        min={0}
+                        value={scenario.sellPrice}
+                        onChange={(event) =>
+                          updateSellScenario({
+                            ...scenario,
+                            sellPrice: Number(event.target.value)
+                          })
+                        }
+                      />
+                    </label>
+                  </div>
+                </div>
+              ))
+            )}
+          </div>
         </CardContent>
       </Card>
 
