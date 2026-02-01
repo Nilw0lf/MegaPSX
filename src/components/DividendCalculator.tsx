@@ -53,7 +53,12 @@ export const DividendCalculator = () => {
   }, [form.taxProfileId, taxProfiles]);
 
   const taxProfile = taxProfiles.find((profile) => profile.id === form.taxProfileId);
-  const withholdingRate = taxProfile?.dividendWithholdingRate ?? 0;
+  const cgtOverride =
+    form.cgtRateOverride === "" ? undefined : Number(form.cgtRateOverride);
+  const withholdingRate =
+    typeof cgtOverride === "number"
+      ? cgtOverride
+      : taxProfile?.dividendWithholdingRate ?? 0;
 
   const results = useMemo(
     () =>
