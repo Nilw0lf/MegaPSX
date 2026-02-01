@@ -56,7 +56,7 @@ export const TabsTrigger = ({
       className={cn(
         "rounded-full px-4 py-2 text-sm font-medium transition-all",
         isActive
-          ? "bg-accent text-accentForeground shadow-sm"
+          ? "bg-accent text-accent-foreground shadow-sm"
           : "text-muted-foreground hover:text-foreground"
       )}
       onClick={() => context.onValueChange(value)}
