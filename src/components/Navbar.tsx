@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { Download, Settings, Upload } from "lucide-react";
+import { Download, LayoutGrid, Settings, Upload } from "lucide-react";
 import { useEffect, useMemo, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -38,13 +38,13 @@ export const Navbar = () => {
         id: item.id,
         label: item.label,
         type: "Dividend",
-        href: "/dividend"
+        href: "/tools?tab=dividend"
       })),
       ...sellScenarios.map((item) => ({
         id: item.id,
         label: item.label,
         type: "Sell",
-        href: "/sell"
+        href: "/tools?tab=sell"
       }))
     ].filter((item) => item.label.toLowerCase().includes(query));
   }, [searchQuery, dividendScenarios, sellScenarios]);
@@ -63,9 +63,14 @@ export const Navbar = () => {
   return (
     <header className="sticky top-0 z-40 border-b border-border bg-background/90 backdrop-blur">
       <div className="mx-auto flex w-full max-w-6xl items-center gap-4 px-6 py-4">
-        <Link href="/" className="text-lg font-semibold">
-          MegaPX
-        </Link>
+        <div className="flex items-center gap-3">
+          <Link href="/" className="text-lg font-semibold">
+            MegaPX
+          </Link>
+          <Link href="/tools" className="text-xs font-semibold uppercase tracking-[0.2em] text-muted-foreground hover:text-foreground">
+            Tools
+          </Link>
+        </div>
         <div className="relative flex-1">
           <Input
             ref={inputRef}
@@ -101,6 +106,12 @@ export const Navbar = () => {
         </div>
         <div className="flex items-center gap-2">
           <ThemeToggle />
+          <Link href="/">
+            <Button variant="ghost" size="sm">
+              <LayoutGrid size={16} />
+              Dashboard
+            </Button>
+          </Link>
           <Button variant="ghost" size="sm" onClick={handleExport}>
             <Download size={16} />
             Export

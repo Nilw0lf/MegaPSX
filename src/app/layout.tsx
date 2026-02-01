@@ -3,6 +3,7 @@ import { ThemeProvider } from "@/components/ThemeProvider";
 import { Navbar } from "@/components/Navbar";
 import { KeyboardShortcuts } from "@/components/KeyboardShortcuts";
 import { ToastStack } from "@/components/ToastStack";
+import { Footer } from "@/components/Footer";
 import "./globals.css";
 
 export const metadata: Metadata = {
@@ -24,6 +25,7 @@ export default function RootLayout({
           <main className="mx-auto w-full max-w-6xl px-6 pb-16 pt-10">
             {children}
           </main>
+          <Footer />
           <ToastStack />
         </ThemeProvider>
       </body>

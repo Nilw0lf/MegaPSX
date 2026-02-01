@@ -13,9 +13,8 @@ Open `http://localhost:3000`.
 
 ## Core Routes
 
-- `/` Dashboard (Dividend After Tax, Sell Planner, Compare)
-- `/dividend` Dividend After-Tax module
-- `/sell` Sell Planner module
+- `/` Dashboard (tool hub)
+- `/tools` Core tools (Dividend After Tax, Sell Planner, Compare)
 - `/goal` Monthly Contribution to 2030 Goal calculator
 - `/risk` Position Sizing + Risk Guardrail calculator
 - `/inflation` Inflation calculator (Pakistan)
@@ -26,9 +25,9 @@ Open `http://localhost:3000`.
 ## Keyboard Shortcuts
 
 - `/` Focus global search
-- `D` Go to Dividend module
-- `S` Go to Sell Planner
-- `C` Go to Compare (Dashboard)
+- `D` Go to Dividend module (Tools)
+- `S` Go to Sell Planner (Tools)
+- `C` Go to Compare (Tools)
 - `Cmd/Ctrl + Enter` Save the current scenario
 
 ## Templates (Tax + Fee Profiles)

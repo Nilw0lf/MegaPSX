@@ -1,11 +1,10 @@
 "use client";
 
 import { useEffect } from "react";
-import { usePathname, useRouter } from "next/navigation";
+import { useRouter } from "next/navigation";
 
 export const KeyboardShortcuts = () => {
   const router = useRouter();
-  const pathname = usePathname();
 
   useEffect(() => {
     const handler = (event: KeyboardEvent) => {
@@ -21,24 +20,18 @@ export const KeyboardShortcuts = () => {
         }
       }
       if (event.key.toLowerCase() === "d") {
-        if (pathname !== "/dividend") {
-          router.push("/dividend");
-        }
+        router.push("/tools?tab=dividend");
       }
       if (event.key.toLowerCase() === "s") {
-        if (pathname !== "/sell") {
-          router.push("/sell");
-        }
+        router.push("/tools?tab=sell");
       }
       if (event.key.toLowerCase() === "c") {
-        if (pathname !== "/") {
-          router.push("/");
-        }
+        router.push("/tools?tab=compare");
       }
     };
     window.addEventListener("keydown", handler);
     return () => window.removeEventListener("keydown", handler);
-  }, [router, pathname]);
+  }, [router]);
 
   return null;
 };
