@@ -1,0 +1,63 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  color-scheme: light;
+  --background: 210 33% 97%;
+  --foreground: 222 22% 10%;
+  --card: 0 0% 100%;
+  --card-foreground: 222 22% 10%;
+  --muted: 210 20% 94%;
+  --muted-foreground: 215 12% 40%;
+  --border: 214 20% 90%;
+  --input: 214 20% 90%;
+  --accent: 200 88% 45%;
+  --accent-foreground: 0 0% 100%;
+  --danger: 0 70% 55%;
+  --ring: 200 88% 45%;
+  --shadow: 220 18% 18%;
+}
+
+.dark {
+  color-scheme: dark;
+  --background: 224 20% 10%;
+  --foreground: 0 0% 94%;
+  --card: 224 18% 14%;
+  --card-foreground: 0 0% 94%;
+  --muted: 223 18% 18%;
+  --muted-foreground: 220 12% 60%;
+  --border: 223 14% 24%;
+  --input: 223 14% 24%;
+  --accent: 200 88% 40%;
+  --accent-foreground: 0 0% 100%;
+  --danger: 0 64% 52%;
+  --ring: 200 88% 40%;
+  --shadow: 220 30% 2%;
+}
+
+* {
+  @apply border-border;
+}
+
+body {
+  @apply bg-background text-foreground antialiased;
+}
+
+input::placeholder {
+  @apply text-muted-foreground;
+}
+
+@layer components {
+  .card-surface {
+    @apply bg-card text-cardForeground rounded-xl border shadow-card transition-all duration-200;
+  }
+
+  .card-surface:hover {
+    @apply shadow-card-hover border-accent/30 -translate-y-0.5;
+  }
+
+  .soft-focus {
+    @apply focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background;
+  }
+}
