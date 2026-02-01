@@ -36,7 +36,8 @@ export const SellPlanner = () => {
       .slice(0, 10),
     sellDate: new Date().toISOString().slice(0, 10),
     taxProfileId: taxProfiles[0]?.id || "",
-    feeProfileId: feeProfiles[0]?.id || ""
+    feeProfileId: feeProfiles[0]?.id || "",
+    cgtRateOverride: ""
   });
 
   useEffect(() => {
@@ -50,6 +51,9 @@ export const SellPlanner = () => {
 
   const taxProfile = taxProfiles.find((profile) => profile.id === form.taxProfileId);
   const feeProfile = feeProfiles.find((profile) => profile.id === form.feeProfileId);
+
+  const cgtOverride =
+    form.cgtRateOverride === "" ? undefined : Number(form.cgtRateOverride);
 
   const results = useMemo(
     () =>
@@ -70,9 +74,10 @@ export const SellPlanner = () => {
           updatedAt: ""
         },
         taxProfile,
-        feeProfile
+        feeProfile,
+        cgtOverride
       ),
-    [form, taxProfile, feeProfile]
+    [form, taxProfile, feeProfile, cgtOverride]
   );
 
   const breakEven = useMemo(
@@ -94,9 +99,10 @@ export const SellPlanner = () => {
           updatedAt: ""
         },
         taxProfile,
-        feeProfile
+        feeProfile,
+        cgtOverride
       ),
-    [form, taxProfile, feeProfile]
+    [form, taxProfile, feeProfile, cgtOverride]
   );
 
   const chartData = useMemo(() => {
@@ -122,14 +128,15 @@ export const SellPlanner = () => {
           updatedAt: ""
         },
         taxProfile,
-        feeProfile
+        feeProfile,
+        cgtOverride
       );
       return {
         sellPrice,
         netPL: preview.netPL
       };
     });
-  }, [form, taxProfile, feeProfile]);
+  }, [form, taxProfile, feeProfile, cgtOverride]);
 
   const handleSave = useCallback(() => {
     addScenario({
@@ -273,6 +280,21 @@ export const SellPlanner = () => {
                   </option>
                 ))}
               </Select>
+            </label>
+            <label className="text-sm">
+              CGT rate override (%)
+              <Input
+                type="number"
+                min={0}
+                placeholder="Optional"
+                value={form.cgtRateOverride}
+                onChange={(event) =>
+                  setForm((prev) => ({
+                    ...prev,
+                    cgtRateOverride: event.target.value
+                  }))
+                }
+              />
             </label>
           </div>
           <div className="flex flex-wrap items-center gap-3">

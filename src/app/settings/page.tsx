@@ -5,7 +5,6 @@ import { Download, Upload } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import { Select } from "@/components/ui/select";
 import { Skeleton } from "@/components/ui/skeleton";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { useAppStore } from "@/lib/store";
@@ -18,11 +17,9 @@ export default function SettingsPage() {
   const importData = useAppStore((state) => state.importData);
   const resetAll = useAppStore((state) => state.resetAll);
   const pushToast = useAppStore((state) => state.pushToast);
-  const taxProfiles = useAppStore((state) => state.taxProfiles);
   const feeProfiles = useAppStore((state) => state.feeProfiles);
   const dividendScenarios = useAppStore((state) => state.dividendScenarios);
   const sellScenarios = useAppStore((state) => state.sellScenarios);
-  const updateTaxProfile = useAppStore((state) => state.updateTaxProfile);
   const updateFeeProfile = useAppStore((state) => state.updateFeeProfile);
   const updateDividendScenario = useAppStore((state) => state.updateDividendScenario);
   const updateSellScenario = useAppStore((state) => state.updateSellScenario);
@@ -95,107 +92,6 @@ export default function SettingsPage() {
             <Upload size={16} />
             Import JSON
           </Button>
-        </CardContent>
-      </Card>
-
-      <Card>
-        <CardHeader>
-          <CardTitle>Tax Profile Quick Edit</CardTitle>
-          <CardDescription>
-            Adjust dividend withholding rates (10%–30%) directly from settings.
-          </CardDescription>
-        </CardHeader>
-        <CardContent className="grid gap-4">
-          {taxProfiles.map((profile) => (
-            <div key={profile.id} className="grid gap-2 rounded-lg border border-border p-4">
-              <p className="text-sm font-medium">{profile.name}</p>
-              <label className="text-sm">
-                Dividend withholding rate (%)
-                <Input
-                  type="number"
-                  min={10}
-                  max={30}
-                  value={profile.dividendWithholdingRate}
-                  onChange={(event) =>
-                    updateTaxProfile({
-                      ...profile,
-                      dividendWithholdingRate: Number(event.target.value)
-                    })
-                  }
-                />
-              </label>
-              <div className="grid gap-2">
-                <p className="text-sm font-medium">CGT Slabs</p>
-                {profile.cgtRules.map((rule) => (
-                  <div
-                    key={rule.id}
-                    className="grid gap-2 rounded-lg border border-border p-3 md:grid-cols-[1.2fr_1fr_1fr_1fr]"
-                  >
-                    <Input
-                      value={rule.label}
-                      onChange={(event) =>
-                        updateTaxProfile({
-                          ...profile,
-                          cgtRules: profile.cgtRules.map((item) =>
-                            item.id === rule.id ? { ...item, label: event.target.value } : item
-                          )
-                        })
-                      }
-                    />
-                    <Input
-                      type="number"
-                      min={0}
-                      value={rule.minDays}
-                      onChange={(event) =>
-                        updateTaxProfile({
-                          ...profile,
-                          cgtRules: profile.cgtRules.map((item) =>
-                            item.id === rule.id
-                              ? { ...item, minDays: Number(event.target.value) }
-                              : item
-                          )
-                        })
-                      }
-                    />
-                    <Input
-                      type="number"
-                      min={0}
-                      value={rule.maxDays ?? ""}
-                      placeholder="Max days"
-                      onChange={(event) =>
-                        updateTaxProfile({
-                          ...profile,
-                          cgtRules: profile.cgtRules.map((item) =>
-                            item.id === rule.id
-                              ? {
-                                  ...item,
-                                  maxDays: event.target.value ? Number(event.target.value) : null
-                                }
-                              : item
-                          )
-                        })
-                      }
-                    />
-                    <Input
-                      type="number"
-                      min={0}
-                      value={rule.rate}
-                      onChange={(event) =>
-                        updateTaxProfile({
-                          ...profile,
-                          cgtRules: profile.cgtRules.map((item) =>
-                            item.id === rule.id
-                              ? { ...item, rate: Number(event.target.value) }
-                              : item
-                          )
-                        })
-                      }
-                    />
-                  </div>
-                ))}
-              </div>
-            </div>
-          ))}
         </CardContent>
       </Card>
 

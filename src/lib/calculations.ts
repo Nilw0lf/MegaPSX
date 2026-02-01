@@ -91,13 +91,15 @@ export const calculateFees = (
 export const calcSell = (
   scenario: SellScenario,
   taxProfile?: TaxProfile,
-  feeProfile?: FeeProfile
+  feeProfile?: FeeProfile,
+  cgtRateOverride?: number
 ) => {
   const tradeValue = scenario.quantity * scenario.sellPrice;
   const costBasis = scenario.quantity * scenario.buyPrice;
   const grossPL = tradeValue - costBasis;
   const holdingDays = daysBetween(scenario.buyDate, scenario.sellDate);
-  const cgtRate = taxProfile ? findCgtRate(taxProfile, holdingDays) : 0;
+  const derivedRate = taxProfile ? findCgtRate(taxProfile, holdingDays) : 0;
+  const cgtRate = typeof cgtRateOverride === "number" ? cgtRateOverride : derivedRate;
   const taxableGain = Math.max(grossPL, 0);
   const cgt = taxableGain * (cgtRate / 100);
   const sellFees = calculateFees(feeProfile, tradeValue, "sell");
@@ -123,7 +125,8 @@ export const calcSell = (
 export const findBreakEvenPrice = (
   scenario: SellScenario,
   taxProfile?: TaxProfile,
-  feeProfile?: FeeProfile
+  feeProfile?: FeeProfile,
+  cgtRateOverride?: number
 ) => {
   let low = scenario.buyPrice * 0.5;
   let high = scenario.buyPrice * 3;
@@ -131,7 +134,7 @@ export const findBreakEvenPrice = (
   for (let i = 0; i < 40; i += 1) {
     mid = (low + high) / 2;
     const testScenario = { ...scenario, sellPrice: mid };
-    const { netPL } = calcSell(testScenario, taxProfile, feeProfile);
+    const { netPL } = calcSell(testScenario, taxProfile, feeProfile, cgtRateOverride);
     if (netPL > 0) {
       high = mid;
     } else {

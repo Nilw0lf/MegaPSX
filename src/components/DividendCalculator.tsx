@@ -42,7 +42,8 @@ export const DividendCalculator = () => {
     dividendPerShare: 4.5,
     dividendFrequency: "Quarterly" as DividendFrequency,
     customDistributionsPerYear: 4,
-    taxProfileId: taxProfiles[0]?.id || ""
+    taxProfileId: taxProfiles[0]?.id || "",
+    cgtRateOverride: ""
   });
 
   useEffect(() => {
@@ -244,6 +245,21 @@ export const DividendCalculator = () => {
                   </option>
                 ))}
               </Select>
+            </label>
+            <label className="text-sm">
+              CGT rate override (%)
+              <Input
+                type="number"
+                min={0}
+                placeholder="Optional"
+                value={form.cgtRateOverride}
+                onChange={(event) =>
+                  setForm((prev) => ({
+                    ...prev,
+                    cgtRateOverride: event.target.value
+                  }))
+                }
+              />
             </label>
           </div>
           <div className="flex flex-wrap items-center gap-3">
