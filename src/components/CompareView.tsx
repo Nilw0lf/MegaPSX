@@ -56,6 +56,22 @@ export const CompareView = () => {
     return sellResults.netPL / monthlyDividend;
   }, [dividendResults, sellResults]);
 
+  const verdict = useMemo(() => {
+    if (!dividendResults || !sellResults) {
+      return "Select scenarios to compare outcomes.";
+    }
+    if (sellResults.netPL <= 0) {
+      return "Holding for dividends is likely safer since selling now is net negative.";
+    }
+    if (dividendResults.annualNet === 0) {
+      return "Selling now looks more beneficial since dividends are currently zero.";
+    }
+    if (sellResults.netPL > dividendResults.annualNet) {
+      return "Selling now yields more than a full year of net dividends.";
+    }
+    return "Holding for dividends appears more beneficial than selling now.";
+  }, [dividendResults, sellResults]);
+
   const handleCopy = async () => {
     if (!dividendResults || !sellResults || !dividendScenario || !sellScenario) return;
     const summary = `Compare Summary\nDividend Scenario: ${dividendScenario.label}\nAnnual Net Dividend: ${formatCurrency(dividendResults.annualNet)}\nSell Scenario: ${sellScenario.label}\nNet Profit from Sell: ${formatCurrency(sellResults.netPL)}\nEquivalent Dividend Months: ${monthsEquivalent.toFixed(1)}`;
@@ -101,7 +117,7 @@ export const CompareView = () => {
           </label>
         </CardContent>
       </Card>
-      <div className="grid gap-4 lg:grid-cols-3">
+      <div className="grid gap-4 lg:grid-cols-4">
         <Card>
           <CardHeader>
             <CardTitle>Annual Net Dividend</CardTitle>
@@ -143,6 +159,15 @@ export const CompareView = () => {
               <ClipboardCopy size={16} />
               Copy compare summary
             </Button>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardHeader>
+            <CardTitle>Verdict</CardTitle>
+            <CardDescription>Which path looks more beneficial.</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <p className="text-sm text-muted-foreground">{verdict}</p>
           </CardContent>
         </Card>
       </div>

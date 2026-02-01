@@ -57,7 +57,7 @@ export default function DashboardPage() {
         </TabsContent>
       </Tabs>
 
-      <div className="grid gap-4 lg:grid-cols-2">
+      <div className="grid gap-4 lg:grid-cols-3">
         <Card>
           <CardHeader>
             <CardTitle>2030 Goal Calculator</CardTitle>
@@ -76,6 +76,17 @@ export default function DashboardPage() {
           </CardHeader>
           <CardContent>
             <Link className="text-sm font-medium text-accent underline" href="/risk">
+              Open calculator →
+            </Link>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardHeader>
+            <CardTitle>Inflation Calculator</CardTitle>
+            <CardDescription>See how PKR purchasing power changes over time.</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <Link className="text-sm font-medium text-accent underline" href="/inflation">
               Open calculator →
             </Link>
           </CardContent>

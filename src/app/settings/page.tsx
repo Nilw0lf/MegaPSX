@@ -10,6 +10,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { useAppStore } from "@/lib/store";
 import { useLoad } from "@/lib/useLoad";
+import type { DividendScenario, SellScenario } from "@/types/models";
 
 export default function SettingsPage() {
   const loaded = useLoad();
@@ -18,20 +19,67 @@ export default function SettingsPage() {
   const importData = useAppStore((state) => state.importData);
   const resetAll = useAppStore((state) => state.resetAll);
   const pushToast = useAppStore((state) => state.pushToast);
+  const taxProfiles = useAppStore((state) => state.taxProfiles);
   const feeProfiles = useAppStore((state) => state.feeProfiles);
   const dividendScenarios = useAppStore((state) => state.dividendScenarios);
   const sellScenarios = useAppStore((state) => state.sellScenarios);
+  const addDividendScenario = useAppStore((state) => state.addDividendScenario);
+  const addSellScenario = useAppStore((state) => state.addSellScenario);
   const updateFeeProfile = useAppStore((state) => state.updateFeeProfile);
   const updateDividendScenario = useAppStore((state) => state.updateDividendScenario);
   const updateSellScenario = useAppStore((state) => state.updateSellScenario);
+  const deleteScenario = useAppStore((state) => state.deleteScenario);
 
   const [resetInput, setResetInput] = useState("");
   const [resetOpen, setResetOpen] = useState(false);
+  const [dividendDrafts, setDividendDrafts] = useState<Record<string, DividendScenario>>({});
+  const [sellDrafts, setSellDrafts] = useState<Record<string, SellScenario>>({});
 
   useEffect(() => {
     const timer = setTimeout(() => setShowSkeleton(false), 400);
     return () => clearTimeout(timer);
   }, []);
+
+  useEffect(() => {
+    const next: Record<string, DividendScenario> = {};
+    dividendScenarios.forEach((scenario) => {
+      next[scenario.id] = scenario;
+    });
+    setDividendDrafts(next);
+  }, [dividendScenarios]);
+
+  useEffect(() => {
+    const next: Record<string, SellScenario> = {};
+    sellScenarios.forEach((scenario) => {
+      next[scenario.id] = scenario;
+    });
+    setSellDrafts(next);
+  }, [sellScenarios]);
+
+  const handleDividendDraftChange = (
+    id: string,
+    updater: (prev: DividendScenario) => DividendScenario
+  ) => {
+    setDividendDrafts((prev) => {
+      const current = prev[id] ?? dividendScenarios.find((item) => item.id === id);
+      if (!current) return prev;
+      return { ...prev, [id]: updater(current) };
+    });
+  };
+
+  const handleSellDraftChange = (
+    id: string,
+    updater: (prev: SellScenario) => SellScenario
+  ) => {
+    setSellDrafts((prev) => {
+      const current = prev[id] ?? sellScenarios.find((item) => item.id === id);
+      if (!current) return prev;
+      return { ...prev, [id]: updater(current) };
+    });
+  };
+
+  const defaultTaxProfileId = taxProfiles[0]?.id ?? "";
+  const defaultFeeProfileId = feeProfiles[0]?.id ?? "";
 
   if (!loaded || showSkeleton) {
     return (
@@ -194,155 +242,232 @@ export default function SettingsPage() {
         </CardHeader>
         <CardContent className="grid gap-6">
           <div className="grid gap-3">
-            <p className="text-sm font-semibold">Dividend Scenarios</p>
+            <div className="flex items-center justify-between">
+              <p className="text-sm font-semibold">Dividend Scenarios</p>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() =>
+                  addDividendScenario({
+                    label: "New dividend scenario",
+                    tickerOrName: "New Holding",
+                    shares: 100,
+                    buyPrice: 100,
+                    currentPrice: 100,
+                    dividendPerShare: 1,
+                    dividendFrequency: "Annual",
+                    taxProfileId: defaultTaxProfileId
+                  })
+                }
+              >
+                Add
+              </Button>
+            </div>
             {dividendScenarios.length === 0 ? (
               <p className="text-sm text-muted-foreground">No dividend scenarios saved yet.</p>
             ) : (
-              dividendScenarios.map((scenario) => (
-                <div key={scenario.id} className="grid gap-2 rounded-lg border border-border p-4">
-                  <label className="text-sm">
-                    Label
-                    <Input
-                      value={scenario.label}
-                      onChange={(event) =>
-                        updateDividendScenario({ ...scenario, label: event.target.value })
-                      }
-                    />
-                  </label>
-                  <label className="text-sm">
-                    Ticker / Name
-                    <Input
-                      value={scenario.tickerOrName}
-                      onChange={(event) =>
-                        updateDividendScenario({
-                          ...scenario,
-                          tickerOrName: event.target.value
-                        })
-                      }
-                    />
-                  </label>
-                  <div className="grid gap-2 md:grid-cols-3">
+              dividendScenarios.map((scenario) => {
+                const draft = dividendDrafts[scenario.id] ?? scenario;
+                return (
+                  <div key={scenario.id} className="grid gap-2 rounded-lg border border-border p-4">
                     <label className="text-sm">
-                      Shares
+                      Label
                       <Input
-                        type="number"
-                        min={0}
-                        value={scenario.shares}
+                        value={draft.label}
                         onChange={(event) =>
-                          updateDividendScenario({
-                            ...scenario,
-                            shares: Number(event.target.value)
-                          })
+                          handleDividendDraftChange(scenario.id, (prev) => ({
+                            ...prev,
+                            label: event.target.value
+                          }))
                         }
                       />
                     </label>
                     <label className="text-sm">
-                      Buy Price
+                      Ticker / Name
                       <Input
-                        type="number"
-                        min={0}
-                        value={scenario.buyPrice}
+                        value={draft.tickerOrName}
                         onChange={(event) =>
-                          updateDividendScenario({
-                            ...scenario,
-                            buyPrice: Number(event.target.value)
-                          })
+                          handleDividendDraftChange(scenario.id, (prev) => ({
+                            ...prev,
+                            tickerOrName: event.target.value
+                          }))
                         }
                       />
                     </label>
-                    <label className="text-sm">
-                      Current Price
-                      <Input
-                        type="number"
-                        min={0}
-                        value={scenario.currentPrice}
-                        onChange={(event) =>
-                          updateDividendScenario({
-                            ...scenario,
-                            currentPrice: Number(event.target.value)
-                          })
-                        }
-                      />
-                    </label>
+                    <div className="grid gap-2 md:grid-cols-3">
+                      <label className="text-sm">
+                        Shares
+                        <Input
+                          type="number"
+                          min={0}
+                          value={draft.shares}
+                          onChange={(event) =>
+                            handleDividendDraftChange(scenario.id, (prev) => ({
+                              ...prev,
+                              shares: Number(event.target.value)
+                            }))
+                          }
+                        />
+                      </label>
+                      <label className="text-sm">
+                        Buy Price
+                        <Input
+                          type="number"
+                          min={0}
+                          value={draft.buyPrice}
+                          onChange={(event) =>
+                            handleDividendDraftChange(scenario.id, (prev) => ({
+                              ...prev,
+                              buyPrice: Number(event.target.value)
+                            }))
+                          }
+                        />
+                      </label>
+                      <label className="text-sm">
+                        Current Price
+                        <Input
+                          type="number"
+                          min={0}
+                          value={draft.currentPrice}
+                          onChange={(event) =>
+                            handleDividendDraftChange(scenario.id, (prev) => ({
+                              ...prev,
+                              currentPrice: Number(event.target.value)
+                            }))
+                          }
+                        />
+                      </label>
+                    </div>
+                    <div className="flex flex-wrap gap-2">
+                      <Button size="sm" onClick={() => updateDividendScenario(draft)}>
+                        Save
+                      </Button>
+                      <Button
+                        size="sm"
+                        variant="ghost"
+                        onClick={() => deleteScenario("dividend", scenario.id)}
+                      >
+                        Remove
+                      </Button>
+                    </div>
                   </div>
-                </div>
-              ))
+                );
+              })
             )}
           </div>
           <div className="grid gap-3">
-            <p className="text-sm font-semibold">Sell Scenarios</p>
+            <div className="flex items-center justify-between">
+              <p className="text-sm font-semibold">Sell Scenarios</p>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() =>
+                  addSellScenario({
+                    label: "New sell scenario",
+                    tickerOrName: "New Holding",
+                    quantity: 100,
+                    buyPrice: 100,
+                    sellPrice: 110,
+                    buyDate: new Date().toISOString().slice(0, 10),
+                    sellDate: new Date().toISOString().slice(0, 10),
+                    taxProfileId: defaultTaxProfileId,
+                    feeProfileId: defaultFeeProfileId
+                  })
+                }
+              >
+                Add
+              </Button>
+            </div>
             {sellScenarios.length === 0 ? (
               <p className="text-sm text-muted-foreground">No sell scenarios saved yet.</p>
             ) : (
-              sellScenarios.map((scenario) => (
-                <div key={scenario.id} className="grid gap-2 rounded-lg border border-border p-4">
-                  <label className="text-sm">
-                    Label
-                    <Input
-                      value={scenario.label}
-                      onChange={(event) =>
-                        updateSellScenario({ ...scenario, label: event.target.value })
-                      }
-                    />
-                  </label>
-                  <label className="text-sm">
-                    Ticker / Name
-                    <Input
-                      value={scenario.tickerOrName}
-                      onChange={(event) =>
-                        updateSellScenario({
-                          ...scenario,
-                          tickerOrName: event.target.value
-                        })
-                      }
-                    />
-                  </label>
-                  <div className="grid gap-2 md:grid-cols-3">
+              sellScenarios.map((scenario) => {
+                const draft = sellDrafts[scenario.id] ?? scenario;
+                return (
+                  <div key={scenario.id} className="grid gap-2 rounded-lg border border-border p-4">
                     <label className="text-sm">
-                      Quantity
+                      Label
                       <Input
-                        type="number"
-                        min={0}
-                        value={scenario.quantity}
+                        value={draft.label}
                         onChange={(event) =>
-                          updateSellScenario({
-                            ...scenario,
-                            quantity: Number(event.target.value)
-                          })
+                          handleSellDraftChange(scenario.id, (prev) => ({
+                            ...prev,
+                            label: event.target.value
+                          }))
                         }
                       />
                     </label>
                     <label className="text-sm">
-                      Buy Price
+                      Ticker / Name
                       <Input
-                        type="number"
-                        min={0}
-                        value={scenario.buyPrice}
+                        value={draft.tickerOrName}
                         onChange={(event) =>
-                          updateSellScenario({
-                            ...scenario,
-                            buyPrice: Number(event.target.value)
-                          })
+                          handleSellDraftChange(scenario.id, (prev) => ({
+                            ...prev,
+                            tickerOrName: event.target.value
+                          }))
                         }
                       />
                     </label>
-                    <label className="text-sm">
-                      Sell Price
-                      <Input
-                        type="number"
-                        min={0}
-                        value={scenario.sellPrice}
-                        onChange={(event) =>
-                          updateSellScenario({
-                            ...scenario,
-                            sellPrice: Number(event.target.value)
-                          })
-                        }
-                      />
-                    </label>
+                    <div className="grid gap-2 md:grid-cols-3">
+                      <label className="text-sm">
+                        Quantity
+                        <Input
+                          type="number"
+                          min={0}
+                          value={draft.quantity}
+                          onChange={(event) =>
+                            handleSellDraftChange(scenario.id, (prev) => ({
+                              ...prev,
+                              quantity: Number(event.target.value)
+                            }))
+                          }
+                        />
+                      </label>
+                      <label className="text-sm">
+                        Buy Price
+                        <Input
+                          type="number"
+                          min={0}
+                          value={draft.buyPrice}
+                          onChange={(event) =>
+                            handleSellDraftChange(scenario.id, (prev) => ({
+                              ...prev,
+                              buyPrice: Number(event.target.value)
+                            }))
+                          }
+                        />
+                      </label>
+                      <label className="text-sm">
+                        Sell Price
+                        <Input
+                          type="number"
+                          min={0}
+                          value={draft.sellPrice}
+                          onChange={(event) =>
+                            handleSellDraftChange(scenario.id, (prev) => ({
+                              ...prev,
+                              sellPrice: Number(event.target.value)
+                            }))
+                          }
+                        />
+                      </label>
+                    </div>
+                    <div className="flex flex-wrap gap-2">
+                      <Button size="sm" onClick={() => updateSellScenario(draft)}>
+                        Save
+                      </Button>
+                      <Button
+                        size="sm"
+                        variant="ghost"
+                        onClick={() => deleteScenario("sell", scenario.id)}
+                      >
+                        Remove
+                      </Button>
+                    </div>
                   </div>
-                </div>
-              ))
+                );
+              })
             )}
           </div>
         </CardContent>

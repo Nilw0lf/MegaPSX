@@ -18,6 +18,7 @@ Open `http://localhost:3000`.
 - `/sell` Sell Planner module
 - `/goal` Monthly Contribution to 2030 Goal calculator
 - `/risk` Position Sizing + Risk Guardrail calculator
+- `/inflation` Inflation calculator (Pakistan)
 - `/templates` Tax + Fee templates
 - `/history` Saved scenarios
 - `/settings` Theme, export/import, reset
@@ -40,6 +41,7 @@ Open `http://localhost:3000`.
 
 - **Monthly Contribution to 2030 Goal**: projects a future value curve, required monthly contribution, and inflation-adjusted targets.
 - **Position Sizing + Risk Guardrail**: estimates safe allocation limits and suggests next actions based on exposure rules.
+- **Inflation (Pakistan)**: estimates future cost and purchasing power erosion.
 
 ## Import/Export Format
 
