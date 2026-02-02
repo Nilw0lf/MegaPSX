@@ -3,3 +3,5 @@ node_modules
 out
 .DS_Store
 .env*
+apps/api/prisma/dev.db
+apps/api/raw/

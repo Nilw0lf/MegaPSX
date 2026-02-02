@@ -3,11 +3,18 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev",
+    "dev": "concurrently -n api,web -c green,blue \"npm run dev:api\" \"npm run dev:web\"",
+    "dev:web": "next dev",
+    "dev:api": "npm --prefix apps/api run dev",
+    "ingest": "npm --prefix apps/api run ingest",
     "build": "next build",
     "start": "next start",
     "lint": "next lint"
   },
+  "workspaces": [
+    "apps/api",
+    "packages/shared"
+  ],
   "dependencies": {
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.1.0",
@@ -30,6 +37,7 @@
     "eslint-config-next": "14.2.4",
     "postcss": "^8.4.39",
     "tailwindcss": "^3.4.7",
-    "typescript": "^5.5.3"
+    "typescript": "^5.5.3",
+    "concurrently": "^8.2.2"
   }
 }

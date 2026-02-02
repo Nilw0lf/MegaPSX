@@ -8,6 +8,7 @@ import {
   LineChart,
   PiggyBank,
   Scale,
+  Search,
   ShieldCheck
 } from "lucide-react";
 import { PsxDashboard } from "@/components/PsxDashboard";
@@ -182,6 +183,23 @@ export default function DashboardPage() {
           <CardContent>
             <Link className="text-sm font-medium text-accent underline" href="/tools?tab=compare">
               Open tool →
+            </Link>
+          </CardContent>
+        </Card>
+      </div>
+
+      <div className="grid gap-4 lg:grid-cols-3">
+        <Card>
+          <CardHeader>
+            <div className="flex items-center gap-2 text-accent">
+              <Search size={18} />
+              <CardTitle>Market Lookup</CardTitle>
+            </div>
+            <CardDescription>Search local PSX daily prices.</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <Link className="text-sm font-medium text-accent underline" href="/market">
+              Open market page →
             </Link>
           </CardContent>
         </Card>
