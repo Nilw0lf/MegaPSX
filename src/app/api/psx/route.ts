@@ -58,34 +58,6 @@ async function fetchYahooSummary() {
   };
 }
 
-async function fetchPsxHtmlSummary() {
-  const response = await fetch("https://www.psx.com.pk/market-summary", {
-    headers: {
-      "User-Agent": "Mozilla/5.0",
-      Accept: "text/html,application/xhtml+xml"
-    },
-    next: { revalidate: 60 }
-  });
-  if (!response.ok) {
-    throw new Error(`PSX HTML request failed: ${response.status}`);
-  }
-  const html = await response.text();
-  const numberPattern = /KSE-?100[^\\d]*([\\d,.]+)[^\\d-]*([\\d,.-]+)[^\\d-]*([\\d,.-]+%)/i;
-  const match = html.match(numberPattern);
-  if (!match) {
-    throw new Error("Unable to parse KSE-100 from HTML");
-  }
-  const [, value, change, changePercent] = match;
-  return {
-    index: "KSE-100 (HTML)",
-    value,
-    change,
-    changePercent: changePercent.replace("%", ""),
-    volume: "--",
-    valueTraded: "--"
-  };
-}
-
 export async function GET() {
   try {
     for (const source of sources) {
@@ -105,19 +77,6 @@ export async function GET() {
       } catch (error) {
         console.warn(`PSX source failed: ${source.name}`, error);
       }
-    }
-
-    try {
-      const htmlSummary = await fetchPsxHtmlSummary();
-      return NextResponse.json({
-        summary: htmlSummary,
-        gainers: [],
-        losers: [],
-        updatedAt: new Date().toISOString(),
-        source: "PSX HTML"
-      });
-    } catch (error) {
-      console.warn("PSX HTML fallback failed", error);
     }
 
     const yahooSummary = await fetchYahooSummary();
