@@ -32,6 +32,7 @@ interface PsxResponse {
   losers: PsxItem[];
   updatedAt: string;
   error?: string;
+  source?: string;
 }
 
 const toNumber = (value: number | string | undefined) => {
@@ -65,7 +66,8 @@ export const PsxDashboard = () => {
         gainers: [],
         losers: [],
         updatedAt: new Date().toISOString(),
-        error: "Unable to fetch PSX data."
+        error: "Unable to fetch PSX data.",
+        source: "Unavailable"
       });
     } finally {
       setLoading(false);
@@ -132,8 +134,15 @@ export const PsxDashboard = () => {
             <div className="grid gap-4 md:grid-cols-3">
               <Card className="p-4">
                 <p className="text-xs uppercase text-muted-foreground">Index</p>
-                <p className="text-2xl font-semibold">{toText(data?.summary?.index, "KSE-100")}</p>
-                <p className="text-sm text-muted-foreground">{toText(data?.summary?.value)}</p>
+                <p className="text-2xl font-semibold">
+                  {toText(data?.summary?.index, "KSE-100")}
+                </p>
+                <p className="text-sm text-muted-foreground">
+                  {toText(data?.summary?.value)}
+                </p>
+                <p className="text-xs text-muted-foreground">
+                  Source: {data?.source ?? "Unknown"}
+                </p>
               </Card>
               <Card className="p-4">
                 <p className="text-xs uppercase text-muted-foreground">Daily change</p>
