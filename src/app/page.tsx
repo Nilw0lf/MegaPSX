@@ -10,6 +10,7 @@ import {
   Scale,
   ShieldCheck
 } from "lucide-react";
+import { PsxDashboard } from "@/components/PsxDashboard";
 import { Skeleton } from "@/components/ui/skeleton";
 import Link from "next/link";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -185,6 +186,8 @@ export default function DashboardPage() {
           </CardContent>
         </Card>
       </div>
+
+      <PsxDashboard />
     </div>
   );
 }
