@@ -1,133 +1,78 @@
 import { NextResponse } from "next/server";
 
-const sources = [
-  {
-    name: "PSX DPS",
-    summary: "https://dps.psx.com.pk/market-summary",
-    gainers: "https://dps.psx.com.pk/top-gainers",
-    losers: "https://dps.psx.com.pk/top-losers"
-  },
-  {
-    name: "PSX Website",
-    summary: "https://www.psx.com.pk/market-summary",
-    gainers: "https://www.psx.com.pk/top-gainers",
-    losers: "https://www.psx.com.pk/top-losers"
-  }
-];
+const API_BASE = process.env.PSX_TERMINAL_API_BASE ?? "https://psxterminal.com/api";
 
-async function fetchJson(url: string) {
-  const response = await fetch(url, {
-    headers: {
-      "User-Agent": "Mozilla/5.0",
-      Accept: "application/json, text/plain, */*"
-    },
-    next: { revalidate: 60 }
-  });
+const SUMMARY_PATH = process.env.PSX_TERMINAL_SUMMARY_PATH ?? "/market-summary";
+const GAINERS_PATH = process.env.PSX_TERMINAL_GAINERS_PATH ?? "/top-gainers";
+const LOSERS_PATH = process.env.PSX_TERMINAL_LOSERS_PATH ?? "/top-losers";
+
+const buildUrl = (path: string) => `${API_BASE.replace(/\\/$/, "")}${path.startsWith("/") ? path : `/${path}`}`;
+
+const toArray = (value: unknown) => {
+  if (Array.isArray(value)) return value;
+  if (value && typeof value === "object" && Array.isArray((value as { data?: unknown }).data)) {
+    return (value as { data: unknown[] }).data;
+  }
+  return [];
+};
+
+const pickField = (record: Record<string, unknown>, keys: string[]) => {
+  for (const key of keys) {
+    const value = record[key];
+    if (value !== undefined && value !== null && value !== "") return value;
+  }
+  return undefined;
+};
+
+const normalizeItem = (record: Record<string, unknown>) => ({
+  symbol: pickField(record, ["symbol", "ticker", "scrip", "code"]),
+  company: pickField(record, ["company", "company_name", "name"]),
+  price: pickField(record, ["price", "ldcp", "last", "close"]),
+  change: pickField(record, ["change", "chg"]),
+  changePercent: pickField(record, ["changePercent", "change_percent", "chg_percent", "pct_change"]),
+  volume: pickField(record, ["volume", "vol"])
+});
+
+const normalizeSummary = (record: Record<string, unknown>) => ({
+  index: pickField(record, ["index", "index_name", "name", "market"]),
+  value: pickField(record, ["value", "current", "index_value", "points", "last"]),
+  change: pickField(record, ["change", "chg"]),
+  changePercent: pickField(record, ["changePercent", "change_percent", "pct_change"]),
+  volume: pickField(record, ["volume", "vol"]),
+  valueTraded: pickField(record, ["valueTraded", "value_traded", "turnover", "traded_value"])
+});
+
+async function fetchJson(path: string) {
+  const response = await fetch(buildUrl(path), { next: { revalidate: 60 } });
   if (!response.ok) {
-    throw new Error(`PSX request failed: ${response.status}`);
+    throw new Error(`PSX Terminal request failed (${path}): ${response.status}`);
   }
   return response.json();
 }
 
-async function fetchYahooSummary() {
-  const response = await fetch(
-    "https://query1.finance.yahoo.com/v7/finance/quote?symbols=%5EKSE,%5EKSE100",
-    {
-      headers: {
-        "User-Agent": "Mozilla/5.0",
-        Accept: "application/json, text/plain, */*"
-      },
-      next: { revalidate: 60 }
-    }
-  );
-  if (!response.ok) {
-    throw new Error(`Yahoo request failed: ${response.status}`);
-  }
-  const data = await response.json();
-  const result = data?.quoteResponse?.result?.[0];
-  if (!result) {
-    throw new Error("Yahoo response missing KSE data");
-  }
-  return {
-    index: "KSE-100 (Yahoo)",
-    value: result.regularMarketPrice,
-    change: result.regularMarketChange,
-    changePercent: result.regularMarketChangePercent,
-    volume: result.regularMarketVolume,
-    valueTraded: result.regularMarketPreviousClose
-  };
-}
-
-async function fetchPsxHtmlSummary() {
-  const response = await fetch("https://www.psx.com.pk/market-summary", {
-    headers: {
-      "User-Agent": "Mozilla/5.0",
-      Accept: "text/html,application/xhtml+xml"
-    },
-    next: { revalidate: 60 }
-  });
-  if (!response.ok) {
-    throw new Error(`PSX HTML request failed: ${response.status}`);
-  }
-  const html = await response.text();
-  const numberPattern = /KSE-?100[^\\d]*([\\d,.]+)[^\\d-]*([\\d,.-]+)[^\\d-]*([\\d,.-]+%)/i;
-  const match = html.match(numberPattern);
-  if (!match) {
-    throw new Error("Unable to parse KSE-100 from HTML");
-  }
-  const [, value, change, changePercent] = match;
-  return {
-    index: "KSE-100 (HTML)",
-    value,
-    change,
-    changePercent: changePercent.replace("%", ""),
-    volume: "--",
-    valueTraded: "--"
-  };
-}
-
 export async function GET() {
   try {
-    for (const source of sources) {
-      try {
-        const [summary, gainers, losers] = await Promise.all([
-          fetchJson(source.summary),
-          fetchJson(source.gainers),
-          fetchJson(source.losers)
-        ]);
-        return NextResponse.json({
-          summary,
-          gainers,
-          losers,
-          updatedAt: new Date().toISOString(),
-          source: source.name
-        });
-      } catch (error) {
-        console.warn(`PSX source failed: ${source.name}`, error);
-      }
-    }
+    const [summaryRaw, gainersRaw, losersRaw] = await Promise.all([
+      fetchJson(SUMMARY_PATH),
+      fetchJson(GAINERS_PATH),
+      fetchJson(LOSERS_PATH)
+    ]);
 
-    try {
-      const htmlSummary = await fetchPsxHtmlSummary();
-      return NextResponse.json({
-        summary: htmlSummary,
-        gainers: [],
-        losers: [],
-        updatedAt: new Date().toISOString(),
-        source: "PSX HTML"
-      });
-    } catch (error) {
-      console.warn("PSX HTML fallback failed", error);
-    }
+    const summary = normalizeSummary(
+      (summaryRaw && typeof summaryRaw === "object" && !Array.isArray(summaryRaw)
+        ? (summaryRaw as Record<string, unknown>)
+        : {}) as Record<string, unknown>
+    );
 
-    const yahooSummary = await fetchYahooSummary();
+    const gainers = toArray(gainersRaw).map((item) => normalizeItem(item as Record<string, unknown>));
+    const losers = toArray(losersRaw).map((item) => normalizeItem(item as Record<string, unknown>));
 
     return NextResponse.json({
-      summary: yahooSummary,
-      gainers: [],
-      losers: [],
+      summary,
+      gainers,
+      losers,
       updatedAt: new Date().toISOString(),
-      source: "Yahoo Finance"
+      source: "PSX Terminal API"
     });
   } catch (error) {
     console.error(error);
