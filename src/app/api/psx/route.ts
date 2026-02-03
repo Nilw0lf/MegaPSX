@@ -6,7 +6,11 @@ const SUMMARY_PATH = process.env.PSX_TERMINAL_SUMMARY_PATH ?? "/market-summary";
 const GAINERS_PATH = process.env.PSX_TERMINAL_GAINERS_PATH ?? "/top-gainers";
 const LOSERS_PATH = process.env.PSX_TERMINAL_LOSERS_PATH ?? "/top-losers";
 
-const buildUrl = (path: string) => `${API_BASE.replace(/\\/$/, "")}${path.startsWith("/") ? path : `/${path}`}`;
+const buildUrl = (path: string) => {
+  const base = API_BASE.endsWith("/") ? API_BASE.slice(0, -1) : API_BASE;
+  const normalizedPath = path.startsWith("/") ? path : `/${path}`;
+  return `${base}${normalizedPath}`;
+};
 
 const toArray = (value: unknown) => {
   if (Array.isArray(value)) return value;
