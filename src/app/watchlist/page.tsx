@@ -1,11 +1,11 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { MarketLookup } from "@/components/MarketLookup";
+import { WatchlistPanel } from "@/components/WatchlistPanel";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useLoad } from "@/lib/useLoad";
 
-export default function MarketPage() {
+export default function WatchlistPage() {
   const loaded = useLoad();
   const [showSkeleton, setShowSkeleton] = useState(true);
 
@@ -25,13 +25,13 @@ export default function MarketPage() {
 
   return (
     <div className="space-y-6">
-      <div className="rounded-2xl border border-white/10 bg-white/60 p-6 shadow-card backdrop-blur-xl dark:bg-white/5">
-        <h1 className="text-3xl font-semibold">Market Lookup</h1>
+      <div>
+        <h1 className="text-3xl font-semibold">Watchlist</h1>
         <p className="mt-2 text-muted-foreground">
-          Fetch daily prices from the local PSX API.
+          Build a focused list of PSX symbols and store personal notes locally.
         </p>
       </div>
-      <MarketLookup />
+      <WatchlistPanel />
     </div>
   );
 }

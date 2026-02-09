@@ -1,7 +1,14 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import { ArrowDownRight, ArrowUpRight, RefreshCcw } from "lucide-react";
+import {
+  ArrowDownRight,
+  ArrowUpRight,
+  RefreshCcw,
+  Activity,
+  TrendingUp,
+  TrendingDown
+} from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -98,12 +105,15 @@ export const PsxDashboard = () => {
     );
   }, [data, query]);
 
+  const marketChange = toNumber(data?.summary?.changePercent);
+  const marketDirection = marketChange > 0 ? "up" : marketChange < 0 ? "down" : "flat";
+
   return (
-    <Card>
+    <Card className="glass-panel">
       <CardHeader className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
         <div>
-          <CardTitle>PSX Market Summary</CardTitle>
-          <CardDescription>Live KSE-100 snapshot, top gainers, and losers.</CardDescription>
+          <CardTitle className="text-2xl">PSX Market Pulse</CardTitle>
+          <CardDescription>Live KSE-100 snapshot with movers and breadth.</CardDescription>
         </div>
         <div className="flex flex-wrap items-center gap-2">
           <Input
@@ -131,35 +141,53 @@ export const PsxDashboard = () => {
                 {data.error} PSX data may be unavailable in some environments.
               </p>
             )}
-            <div className="grid gap-4 md:grid-cols-3">
-              <Card className="p-4">
-                <p className="text-xs uppercase text-muted-foreground">Index</p>
-                <p className="text-2xl font-semibold">
-                  {toText(data?.summary?.index, "KSE-100")}
-                </p>
-                <p className="text-sm text-muted-foreground">
-                  {toText(data?.summary?.value)}
-                </p>
-                <p className="text-xs text-muted-foreground">
+            <div className="grid gap-4 md:grid-cols-[1.2fr_1fr_1fr]">
+              <Card className="glass-hero p-5">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-xs uppercase text-muted-foreground">Index</p>
+                    <p className="text-2xl font-semibold">
+                      {toText(data?.summary?.index, "KSE-100")}
+                    </p>
+                    <p className="text-sm text-muted-foreground">
+                      {toText(data?.summary?.value)}
+                    </p>
+                  </div>
+                  <div className="rounded-full bg-accent/10 p-3 text-accent">
+                    <Activity size={18} />
+                  </div>
+                </div>
+                <p className="mt-4 text-xs text-muted-foreground">
                   Source: {data?.source ?? "Unknown"}
                 </p>
               </Card>
-              <Card className="p-4">
-                <p className="text-xs uppercase text-muted-foreground">Daily change</p>
-                <p className="text-2xl font-semibold">
-                  {toText(data?.summary?.change)} ({formatPercent(toNumber(data?.summary?.changePercent))})
+              <Card className="glass-panel p-5">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-xs uppercase text-muted-foreground">Daily change</p>
+                    <p className="text-2xl font-semibold">
+                      {toText(data?.summary?.change)} ({formatPercent(toNumber(data?.summary?.changePercent))})
+                    </p>
+                  </div>
+                  <div className="rounded-full bg-accent/10 p-3 text-accent">
+                    {marketDirection === "up" ? <TrendingUp size={18} /> : <TrendingDown size={18} />}
+                  </div>
+                </div>
+                <p className="mt-3 text-sm text-muted-foreground">
+                  Volume: {toText(data?.summary?.volume)}
                 </p>
-                <p className="text-sm text-muted-foreground">Volume: {toText(data?.summary?.volume)}</p>
               </Card>
-              <Card className="p-4">
+              <Card className="glass-panel p-5">
                 <p className="text-xs uppercase text-muted-foreground">Value traded</p>
                 <p className="text-2xl font-semibold">{toText(data?.summary?.valueTraded)}</p>
-                <p className="text-sm text-muted-foreground">Updated: {new Date(data?.updatedAt ?? "").toLocaleTimeString()}</p>
+                <p className="mt-3 text-sm text-muted-foreground">
+                  Updated: {new Date(data?.updatedAt ?? "").toLocaleTimeString()}
+                </p>
               </Card>
             </div>
 
             <div className="grid gap-4 lg:grid-cols-2">
-              <Card className="p-4">
+              <Card className="glass-panel p-4">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2 text-accent">
                     <ArrowUpRight size={16} />
@@ -169,7 +197,7 @@ export const PsxDashboard = () => {
                 </div>
                 <div className="mt-3 space-y-2 text-sm">
                   {filteredGainers.slice(0, 8).map((item) => (
-                    <div key={`${item.symbol}-g`} className="flex items-center justify-between">
+                    <div key={`${item.symbol}-g`} className="flex items-center justify-between rounded-lg px-2 py-2 hover:bg-white/5">
                       <div>
                         <p className="font-semibold">{item.symbol ?? "--"}</p>
                         <p className="text-xs text-muted-foreground">{item.company ?? ""}</p>
@@ -184,7 +212,7 @@ export const PsxDashboard = () => {
                   ))}
                 </div>
               </Card>
-              <Card className="p-4">
+              <Card className="glass-panel p-4">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2 text-danger">
                     <ArrowDownRight size={16} />
@@ -194,7 +222,7 @@ export const PsxDashboard = () => {
                 </div>
                 <div className="mt-3 space-y-2 text-sm">
                   {filteredLosers.slice(0, 8).map((item) => (
-                    <div key={`${item.symbol}-l`} className="flex items-center justify-between">
+                    <div key={`${item.symbol}-l`} className="flex items-center justify-between rounded-lg px-2 py-2 hover:bg-white/5">
                       <div>
                         <p className="font-semibold">{item.symbol ?? "--"}</p>
                         <p className="text-xs text-muted-foreground">{item.company ?? ""}</p>

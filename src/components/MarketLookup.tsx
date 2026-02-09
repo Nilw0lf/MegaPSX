@@ -68,7 +68,7 @@ export const MarketLookup = () => {
 
   return (
     <div className="grid gap-6 lg:grid-cols-[1.1fr_0.9fr]">
-      <Card>
+      <Card className="glass-panel">
         <CardHeader>
           <CardTitle>PSX Market Lookup</CardTitle>
           <CardDescription>Search a symbol and view the latest close.</CardDescription>
@@ -82,11 +82,11 @@ export const MarketLookup = () => {
                 placeholder="Symbol (e.g., LUCK)"
               />
               {suggestions.length > 0 && (
-                <div className="absolute left-0 right-0 z-10 mt-2 rounded-xl border border-border bg-card p-2 shadow-card">
+                <div className="absolute left-0 right-0 z-10 mt-2 rounded-xl border border-white/10 bg-card/70 p-2 shadow-card backdrop-blur-xl">
                   {suggestions.slice(0, 6).map((item) => (
                     <button
                       key={item.symbol}
-                      className="flex w-full items-center justify-between rounded-lg px-3 py-2 text-sm hover:bg-muted"
+                      className="flex w-full items-center justify-between rounded-lg px-3 py-2 text-sm hover:bg-white/5"
                       onClick={() => {
                         setQuery(item.symbol);
                         setSuggestions([]);
@@ -108,7 +108,7 @@ export const MarketLookup = () => {
           {loading ? (
             <Skeleton className="h-24" />
           ) : quote ? (
-            <div className="grid gap-2 rounded-xl border border-border p-4">
+            <div className="grid gap-2 rounded-xl border border-white/10 bg-white/5 p-4">
               <p className="text-sm text-muted-foreground">Latest close</p>
               <p className="text-3xl font-semibold">{formatCurrency(quote.close)}</p>
               <p className="text-xs text-muted-foreground">Date: {quote.date}</p>
@@ -119,7 +119,7 @@ export const MarketLookup = () => {
         </CardContent>
       </Card>
 
-      <Card>
+      <Card className="glass-panel">
         <CardHeader>
           <CardTitle>Last 30 Closes</CardTitle>
           <CardDescription>Simple list view (chart placeholder).</CardDescription>
@@ -131,7 +131,7 @@ export const MarketLookup = () => {
             <p className="text-muted-foreground">No history loaded.</p>
           ) : (
             chartRows.map((row) => (
-              <div key={row.date} className="flex items-center justify-between">
+              <div key={row.date} className="flex items-center justify-between rounded-lg px-2 py-2 hover:bg-white/5">
                 <span>{row.date}</span>
                 <span className="font-medium">{formatCurrency(row.close)}</span>
               </div>

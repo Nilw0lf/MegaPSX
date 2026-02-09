@@ -4,36 +4,36 @@
 
 :root {
   color-scheme: light;
-  --background: 210 33% 97%;
-  --foreground: 222 22% 10%;
+  --background: 214 36% 96%;
+  --foreground: 222 30% 10%;
   --card: 0 0% 100%;
-  --card-foreground: 222 22% 10%;
-  --muted: 210 20% 94%;
-  --muted-foreground: 215 12% 40%;
-  --border: 214 20% 90%;
-  --input: 214 20% 90%;
-  --accent: 200 88% 45%;
+  --card-foreground: 222 30% 12%;
+  --muted: 214 26% 92%;
+  --muted-foreground: 215 14% 40%;
+  --border: 214 20% 88%;
+  --input: 214 20% 88%;
+  --accent: 196 88% 42%;
   --accent-foreground: 0 0% 100%;
   --danger: 0 70% 55%;
-  --ring: 200 88% 45%;
-  --shadow: 220 18% 18%;
+  --ring: 196 88% 42%;
+  --shadow: 220 20% 12%;
 }
 
 .dark {
   color-scheme: dark;
-  --background: 224 20% 10%;
-  --foreground: 0 0% 94%;
-  --card: 224 18% 14%;
-  --card-foreground: 0 0% 94%;
-  --muted: 223 18% 18%;
-  --muted-foreground: 220 12% 60%;
-  --border: 223 14% 24%;
-  --input: 223 14% 24%;
-  --accent: 200 88% 40%;
+  --background: 224 22% 8%;
+  --foreground: 210 20% 96%;
+  --card: 223 18% 14%;
+  --card-foreground: 210 20% 96%;
+  --muted: 224 16% 20%;
+  --muted-foreground: 220 14% 62%;
+  --border: 222 16% 22%;
+  --input: 222 16% 22%;
+  --accent: 196 88% 42%;
   --accent-foreground: 0 0% 100%;
   --danger: 0 64% 52%;
-  --ring: 200 88% 40%;
-  --shadow: 220 30% 2%;
+  --ring: 196 88% 42%;
+  --shadow: 220 28% 3%;
 }
 
 * {
@@ -42,6 +42,11 @@
 
 body {
   @apply bg-background text-foreground antialiased;
+  background-image:
+    radial-gradient(circle at top left, rgba(56, 189, 248, 0.15), transparent 45%),
+    radial-gradient(circle at top right, rgba(99, 102, 241, 0.12), transparent 40%),
+    radial-gradient(circle at bottom right, rgba(14, 165, 233, 0.1), transparent 45%);
+  background-attachment: fixed;
 }
 
 input::placeholder {
@@ -49,12 +54,20 @@ input::placeholder {
 }
 
 @layer components {
-  .card-surface {
-    @apply bg-card text-card-foreground rounded-xl border shadow-card transition-all duration-200;
+.card-surface {
+    @apply bg-card/70 text-card-foreground rounded-2xl border border-white/10 shadow-card backdrop-blur-xl transition-all duration-200;
   }
 
   .card-surface:hover {
     @apply shadow-card-hover border-accent/30 -translate-y-0.5;
+  }
+
+  .glass-panel {
+    @apply bg-card/60 border border-white/15 shadow-card backdrop-blur-2xl;
+  }
+
+  .glass-hero {
+    @apply bg-gradient-to-br from-white/70 via-white/50 to-white/30 dark:from-white/10 dark:via-white/5 dark:to-white/5 border border-white/15 shadow-card backdrop-blur-2xl;
   }
 
   .soft-focus {

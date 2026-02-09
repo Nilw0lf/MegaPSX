@@ -39,19 +39,19 @@ export default function DashboardPage() {
   }
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-10">
       <div className="grid gap-6 lg:grid-cols-[1.2fr_0.8fr] lg:items-center">
-        <div>
+        <div className="space-y-5">
           <p className="text-xs font-semibold uppercase tracking-[0.2em] text-muted-foreground">
             MegaPX Dashboard
           </p>
-          <h1 className="mt-3 text-4xl font-semibold">Profit Reality Suite</h1>
-          <p className="mt-3 text-muted-foreground">
+          <h1 className="text-4xl font-semibold">Profit Reality Suite</h1>
+          <p className="text-muted-foreground">
             A calm command center for dividends, sell planning, and long-term allocation.
           </p>
-          <div className="mt-6 flex flex-wrap gap-3">
+          <div className="flex flex-wrap gap-3">
             <Link href="/tools">
-              <Card className="min-w-[220px] p-4">
+              <Card className="glass-panel min-w-[220px] p-4">
                 <div className="flex items-center gap-3">
                   <div className="rounded-lg bg-accent/10 p-2 text-accent">
                     <BarChart3 size={20} />
@@ -64,7 +64,7 @@ export default function DashboardPage() {
               </Card>
             </Link>
             <Link href="/templates">
-              <Card className="min-w-[220px] p-4">
+              <Card className="glass-panel min-w-[220px] p-4">
                 <div className="flex items-center gap-3">
                   <div className="rounded-lg bg-accent/10 p-2 text-accent">
                     <Gauge size={20} />
@@ -78,7 +78,7 @@ export default function DashboardPage() {
             </Link>
           </div>
         </div>
-        <Card className="p-6">
+        <Card className="glass-hero p-6">
           <div className="flex items-center gap-3">
             <div className="rounded-full bg-accent/10 p-3 text-accent">
               <ShieldCheck size={20} />
@@ -99,7 +99,7 @@ export default function DashboardPage() {
       </div>
 
       <div className="grid gap-4 lg:grid-cols-3">
-        <Card>
+        <Card className="glass-panel">
           <CardHeader>
             <div className="flex items-center gap-2 text-accent">
               <PiggyBank size={18} />
@@ -113,7 +113,7 @@ export default function DashboardPage() {
             </Link>
           </CardContent>
         </Card>
-        <Card>
+        <Card className="glass-panel">
           <CardHeader>
             <div className="flex items-center gap-2 text-accent">
               <Scale size={18} />
@@ -127,7 +127,7 @@ export default function DashboardPage() {
             </Link>
           </CardContent>
         </Card>
-        <Card>
+        <Card className="glass-panel">
           <CardHeader>
             <div className="flex items-center gap-2 text-accent">
               <Coins size={18} />
@@ -144,7 +144,7 @@ export default function DashboardPage() {
       </div>
 
       <div className="grid gap-4 lg:grid-cols-3">
-        <Card>
+        <Card className="glass-panel">
           <CardHeader>
             <div className="flex items-center gap-2 text-accent">
               <LineChart size={18} />
@@ -158,7 +158,7 @@ export default function DashboardPage() {
             </Link>
           </CardContent>
         </Card>
-        <Card>
+        <Card className="glass-panel">
           <CardHeader>
             <div className="flex items-center gap-2 text-accent">
               <BarChart3 size={18} />
@@ -172,7 +172,7 @@ export default function DashboardPage() {
             </Link>
           </CardContent>
         </Card>
-        <Card>
+        <Card className="glass-panel">
           <CardHeader>
             <div className="flex items-center gap-2 text-accent">
               <Scale size={18} />
@@ -189,7 +189,7 @@ export default function DashboardPage() {
       </div>
 
       <div className="grid gap-4 lg:grid-cols-3">
-        <Card>
+        <Card className="glass-panel">
           <CardHeader>
             <div className="flex items-center gap-2 text-accent">
               <Search size={18} />
@@ -200,6 +200,20 @@ export default function DashboardPage() {
           <CardContent>
             <Link className="text-sm font-medium text-accent underline" href="/market">
               Open market page →
+            </Link>
+          </CardContent>
+        </Card>
+        <Card className="glass-panel">
+          <CardHeader>
+            <div className="flex items-center gap-2 text-accent">
+              <Gauge size={18} />
+              <CardTitle>PSX Watchlist</CardTitle>
+            </div>
+            <CardDescription>Track symbols, add notes, and keep focus.</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <Link className="text-sm font-medium text-accent underline" href="/watchlist">
+              Open watchlist →
             </Link>
           </CardContent>
         </Card>

@@ -61,7 +61,7 @@ export const Navbar = () => {
   };
 
   return (
-    <header className="sticky top-0 z-40 border-b border-border bg-background/90 backdrop-blur">
+    <header className="sticky top-0 z-40 border-b border-white/10 bg-background/80 backdrop-blur-xl">
       <div className="mx-auto flex w-full max-w-6xl items-center gap-4 px-6 py-4">
         <div className="flex items-center gap-3">
           <Link href="/" className="text-lg font-semibold">
@@ -69,6 +69,9 @@ export const Navbar = () => {
           </Link>
           <Link href="/tools" className="text-xs font-semibold uppercase tracking-[0.2em] text-muted-foreground hover:text-foreground">
             Tools
+          </Link>
+          <Link href="/watchlist" className="text-xs font-semibold uppercase tracking-[0.2em] text-muted-foreground hover:text-foreground">
+            Watchlist
           </Link>
         </div>
         <div className="relative flex-1">
@@ -79,7 +82,7 @@ export const Navbar = () => {
             onChange={(event) => setSearchQuery(event.target.value)}
           />
           {searchQuery.trim() && (
-            <div className="absolute left-0 right-0 mt-2 rounded-xl border border-border bg-card p-2 shadow-card">
+            <div className="absolute left-0 right-0 mt-2 rounded-xl border border-white/10 bg-card/70 p-2 shadow-card backdrop-blur-xl">
               {filtered.length === 0 ? (
                 <p className="px-3 py-2 text-sm text-muted-foreground">
                   No matches. Try another label.
